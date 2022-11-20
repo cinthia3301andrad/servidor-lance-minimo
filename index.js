@@ -1,33 +1,23 @@
 const express = require("express");
 
-const bodyParser = require('body-parser');
-
 const app = express();
 
-const urlencodeParser = bodyParser.urlencoded({ extended: false });
+let lances = []; 
+let quantidade_lances = []; 
 
-app.get("/", function(req, res) {
-  res.sendFile(__dirname + "/src/index.html");
-});
-
-let lances = []; //lista de lances sem repetição
-let qtd_lances_por_num = []; //qtd de lances por numero da lista acima.
-
-function menorUnico() {
-
+function numeroMenor() {
   let menor_unico = -1;
-  
 
-  for (var i = 0; i < qtd_lances_por_num.length; i++) { //escolhendo um menor unico como base
-    if (qtd_lances_por_num[i] === 1) {
+  for (let i = 0; i < quantidade_lances.length; i++) {
+    if (quantidade_lances[i] === 1) {
 
       menor_unico = lances[i];
       break;
     }
   }
 
-  for (var i = 0; i < qtd_lances_por_num.length; i++) {
-    if (qtd_lances_por_num[i] === 1) {
+  for (let i = 0; i < quantidade_lances.length; i++) {
+    if (quantidade_lances[i] === 1) {
  
       if (lances[i] < menor_unico) {
         menor_unico = lances[i]
@@ -42,49 +32,46 @@ function menorUnico() {
   }
 }
 
-app.post('/controllerForm', urlencodeParser, function(req, res) {
-  var menor_unico;
+app.get('/add/:number', function(req, res) {
+  let numberReq = req.params.number;
+
+  let menor_unico;
 
 
     if (lances.length === 0) {
-      lances.push(req.body.fname);
-      qtd_lances_por_num.push(1);
-      menor_unico = menorUnico();
+      lances.push(numberReq);
+      quantidade_lances.push(1);
+      menor_unico = numeroMenor();
     } else {
-      var true_lances = false; //1 se ja tinha na lista
+      let true_lances = false; 
   
-      for (var i = 0; i < lances.length; i++) {
-        if (req.body.fname === lances[i] && !true_lances) {
-          qtd_lances_por_num.push(1);
+      for (let i = 0; i < lances.length; i++) {
+        if (numberReq === lances[i] && !true_lances) {
+          quantidade_lances.push(1);
           true_lances = true
-          lances.push(req.body.fname);
-          menor_unico = menorUnico();
+          lances.push(numberReq);
+          menor_unico = numeroMenor();
         }
   
-        if (req.body.fname === lances[i]) {
-          qtd_lances_por_num[i] = qtd_lances_por_num[i] + 1;
+        if (numberReq === lances[i]) {
+          quantidade_lances[i] = quantidade_lances[i] + 1;
   
         }
       };
   
-      if (!true_lances) { //entra aqui se n existir na lista
-        lances.push(req.body.fname);
-        qtd_lances_por_num.push(1);
-        menor_unico = menorUnico();
+      if (!true_lances) {
+        lances.push(numberReq);
+        quantidade_lances.push(1);
+        menor_unico = numeroMenor();
       }
     }
 
-    res.sendFile(__dirname + "/src/result.html");
+    res.send(200);
  
 })
 
-app.get("/lista", function(req, res) {
-  res.send({ lances, menor: menorUnico() });
-});
-
-app.get("/results", function(req, res) {
-  // res.send(menorUnico());
-  res.sendFile(__dirname + "/src/result.html");
+app.get("/list", function(_, res) {
+  res.send({ lances, menor: numeroMenor() });
 });
 
 app.listen(3030);
