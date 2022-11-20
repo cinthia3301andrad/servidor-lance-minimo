@@ -32,7 +32,7 @@ function App() {
         const data = response.data;
         setList([...data.lances]);
         setMenor(data.menor);
-        console.log("response", response);
+      
       })
       .catch((err) => {
         console.error("ops! ocorreu um erro" + err);
@@ -49,7 +49,7 @@ function App() {
           <div className="section-main-form">
             <form>
               <div className="section-main-form-div">
-                <label>Faça seu lance:</label>
+                <label>Faça seu lance: </label>
                 <input
                   className="input-name"
                   type="text"
